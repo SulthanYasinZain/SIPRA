@@ -1,0 +1,44 @@
+# dependencies
+node_modules
+
+# pnpm
+pnpm-lock.yaml
+
+# env
+.env
+.env.local
+.env.*.local
+
+# logs
+logs
+*.log
+
+# build
+dist
+build
+
+# vite
+.vite
+
+# coverage
+coverage
+
+# typescript
+*.tsbuildinfo
+
+# hardhat
+artifacts
+cache
+typechain-types
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+
+# misc
+tmp
+temp

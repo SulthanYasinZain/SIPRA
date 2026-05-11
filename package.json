@@ -1,0 +1,13 @@
+{
+  "name": "sipra",
+  "private": true,
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "dev:api": "pnpm --filter api dev",
+    "dev:blockchain": "pnpm --dir blockchain hardhat node",
+    "dev": "concurrently \"pnpm dev:web\" \"pnpm dev:api\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
