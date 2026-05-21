@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  SICK
+  PERMIT
+  ABSENT
+}
+
+model User {
+  user_id     String   @id @default(uuid()) @db.Uuid
+  nim         String   @unique
+  password    String
+  role        Role
+
+  created_at  DateTime @default(now())
+  modified_at DateTime @updatedAt
+
+  enrollments Enrollment[]
+  attendances Attendance[]
+  sessions    Session[] @relation("SessionCreator")
+}
+
+model Class {
+  class_id     Int      @id @default(autoincrement())
+  class_name   String
+
+  created_at   DateTime @default(now())
+  modified_at  DateTime @updatedAt
+
+  sessions     Session[]
+  enrollments  Enrollment[]
+}
+
+model Session {
+  session_id    Int      @id @default(autoincrement())
+
+  class_id      Int
+  class_ref     Class    @relation(fields: [class_id], references: [class_id])
+
+  session_name  String
+
+  qr_secret     String
+
+  created_by    String   @db.Uuid
+  creator       User     @relation("SessionCreator", fields: [created_by], references: [user_id])
+
+  created_at    DateTime @default(now())
+  modified_at   DateTime @updatedAt
+
+  attendances   Attendance[]
+}
+
+model Enrollment {
+  enrollment_id BigInt   @id @default(autoincrement())
+
+  user_id       String   @db.Uuid
+  class_id      Int
+
+  user          User     @relation(fields: [user_id], references: [user_id])
+  class_ref     Class    @relation(fields: [class_id], references: [class_id])
+
+  created_at    DateTime @default(now())
+  modified_at   DateTime @updatedAt
+
+  @@unique([user_id, class_id])
+}
+
+model Attendance {
+  attendance_id BigInt            @id @default(autoincrement())
+
+  user_id       String            @db.Uuid
+  session_id    Int
+
+  status        AttendanceStatus
+
+  latitude      Float?
+  longitude     Float?
+
+  hash           String
+  previous_hash  String?
+
+  qr_token       String?
+
+  user          User              @relation(fields: [user_id], references: [user_id])
+  session       Session           @relation(fields: [session_id], references: [session_id])
+
+  created_at    DateTime          @default(now())
+  modified_at   DateTime          @updatedAt
+
+  @@unique([user_id, session_id])
+}
